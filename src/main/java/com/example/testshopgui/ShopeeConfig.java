@@ -6,8 +6,8 @@ package com.example.testshopgui;
  */
 public class ShopeeConfig {
     // Partner credentials
-    public static final long PARTNER_ID = 1216215L;
-    public static final String PARTNER_KEY = "shpk6457644a7a724d6e74585a504f656a76786f6c485444695956554f45536a";
+    public static final long PARTNER_ID = 1217827L;
+    public static final String PARTNER_KEY = "shpk756a4875774e6c4f5352534344466b785663764b636e535a50774b61594d";
 
     // API Host
     public static final String HOST = "https://openplatform.sandbox.test-stable.shopee.sg";
@@ -19,7 +19,7 @@ public class ShopeeConfig {
     public static final String ORDER_LIST_PATH = "/api/v2/order/get_order_list";
 
     // Default configuration
-    public static final String REDIRECT_URL = "https://smartpick-uat.axonstech.com/";
+    public static final String REDIRECT_URL = "https://smartpick-sit.axonstech.com/";
     public static final String BACKEND_CALLBACK_URL = "https://smartpickapi-sit.axonstech.com/shopee/callback";
     public static final long SHOP_ID = 226457519L;
 

@@ -79,7 +79,7 @@ public class ShopeeCallbackHandler {
             System.out.println();
 
             // In production, redirect to frontend success page
-            return redirectToFrontend("https://smartpick-uat.axonstech.com/auth-success?shop_id=" + shopId);
+            return redirectToFrontend("https://smartpick-sit.axonstech.com/auth-success?shop_id=" + shopId);
 
         } catch (Exception e) {
             System.err.println("Error in callback handler: " + e.getMessage());
