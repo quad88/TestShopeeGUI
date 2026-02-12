@@ -29,7 +29,7 @@ public class ShopeeAuth {
      * @return Authorization URL that redirects to backend callback
      */
     public static String generateAuthUrlWithBackendCallback() throws Exception {
-        return generateAuthUrl(ShopeeConfig.BACKEND_CALLBACK_URL);
+        return generateAuthUrl(RuntimeConfig.getBackendCallbackUrl());
     }
 
 

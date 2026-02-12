@@ -117,7 +117,7 @@ public class InspectPanelFX {
         long timestamp = ShopeeSignature.getCurrentTimestamp();
         String path = ShopeeConfig.AUTH_PARTNER_PATH;
         String sign = ShopeeSignature.generatePartnerSignature(path, timestamp);
-        String redirectUrl = ShopeeConfig.BACKEND_CALLBACK_URL;
+        String redirectUrl = RuntimeConfig.getBackendCallbackUrl();
 
         sb.append("📋 CONFIGURATION\n");
         sb.append("─────────────────────────────────────────────────────────\n");

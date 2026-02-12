@@ -39,7 +39,7 @@ public class OrderPanel {
         formBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         Label shopIdLabel = new Label("Shop ID:");
-        shopIdField = new TextField(String.valueOf(ShopeeConfig.SHOP_ID));
+        shopIdField = new TextField(String.valueOf(RuntimeConfig.getDefaultShopId()));
         shopIdField.setPrefWidth(150);
 
         Button fetchBtn = new Button("📥 Fetch Orders");

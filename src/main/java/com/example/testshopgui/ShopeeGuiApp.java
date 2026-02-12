@@ -160,6 +160,20 @@ public class ShopeeGuiApp extends Application {
         shopIdField.setPromptText("Enter default Shop ID");
         grid.add(shopIdField, 1, 3);
 
+        // Redirect URL
+        grid.add(new Label("Redirect URL:"), 0, 4);
+        TextField redirectUrlField = new TextField(RuntimeConfig.getRedirectUrl());
+        redirectUrlField.setPrefWidth(400);
+        redirectUrlField.setPromptText("Enter redirect URL");
+        grid.add(redirectUrlField, 1, 4);
+
+        // Backend Callback URL
+        grid.add(new Label("Backend Callback URL:"), 0, 5);
+        TextField backendCallbackField = new TextField(RuntimeConfig.getBackendCallbackUrl());
+        backendCallbackField.setPrefWidth(400);
+        backendCallbackField.setPromptText("Enter backend callback URL");
+        grid.add(backendCallbackField, 1, 5);
+
         // Current values display
         Label currentValuesLabel = new Label("📋 Current Active Configuration:");
         currentValuesLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
@@ -183,11 +197,15 @@ public class ShopeeGuiApp extends Application {
                 String partnerKey = partnerKeyField.getText().trim();
                 String host = hostField.getText().trim();
                 long shopId = Long.parseLong(shopIdField.getText().trim());
+                String redirectUrl = redirectUrlField.getText().trim();
+                String backendCallback = backendCallbackField.getText().trim();
 
                 RuntimeConfig.setPartnerId(partnerId);
                 RuntimeConfig.setPartnerKey(partnerKey);
                 RuntimeConfig.setApiHost(host);
                 RuntimeConfig.setDefaultShopId(shopId);
+                RuntimeConfig.setRedirectUrl(redirectUrl);
+                RuntimeConfig.setBackendCallbackUrl(backendCallback);
 
                 updateCurrentValuesDisplay(currentValues);
 
@@ -213,6 +231,8 @@ public class ShopeeGuiApp extends Application {
             partnerKeyField.setText(RuntimeConfig.getPartnerKey());
             hostField.setText(RuntimeConfig.getApiHost());
             shopIdField.setText(String.valueOf(RuntimeConfig.getDefaultShopId()));
+            redirectUrlField.setText(RuntimeConfig.getRedirectUrl());
+            backendCallbackField.setText(RuntimeConfig.getBackendCallbackUrl());
             updateCurrentValuesDisplay(currentValues);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -260,14 +280,18 @@ public class ShopeeGuiApp extends Application {
 
     private void updateCurrentValuesDisplay(TextArea textArea) {
         textArea.setText(String.format(
-            "Partner ID:      %d\n" +
-            "Partner Key:     %s\n" +
-            "API Host:        %s\n" +
-            "Default Shop ID: %d",
+            "Partner ID:           %d\n" +
+            "Partner Key:          %s\n" +
+            "API Host:             %s\n" +
+            "Default Shop ID:      %d\n" +
+            "Redirect URL:         %s\n" +
+            "Backend Callback URL: %s",
             RuntimeConfig.getPartnerId(),
             RuntimeConfig.getPartnerKey(),
             RuntimeConfig.getApiHost(),
-            RuntimeConfig.getDefaultShopId()
+            RuntimeConfig.getDefaultShopId(),
+            RuntimeConfig.getRedirectUrl(),
+            RuntimeConfig.getBackendCallbackUrl()
         ));
     }
 

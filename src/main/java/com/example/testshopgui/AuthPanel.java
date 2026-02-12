@@ -50,7 +50,7 @@ public class AuthPanel {
 
         // Shop ID
         Label shopIdLabel = new Label("Shop ID:");
-        shopIdField = new TextField(String.valueOf(ShopeeConfig.SHOP_ID));
+        shopIdField = new TextField(String.valueOf(RuntimeConfig.getDefaultShopId()));
         shopIdField.setPrefWidth(200);
 
         Button generateBtn = new Button("🔗 Generate Auth URL");
@@ -123,6 +123,7 @@ public class AuthPanel {
             String url = ShopeeAuth.generateAuthUrlWithBackendCallback();
             authUrlArea.setText(url);
             resultArea.setText("✓ Authorization URL generated successfully!\n\n" +
+                "Using Redirect URL: " + RuntimeConfig.getBackendCallbackUrl() + "\n\n" +
                 "Next steps:\n" +
                 "1. Copy the URL above\n" +
                 "2. Open it in a browser\n" +
@@ -131,6 +132,7 @@ public class AuthPanel {
                 "5. Paste it below and complete authorization");
 
             System.out.println("Auth URL generated: " + url);
+            System.out.println("Using redirect URL: " + RuntimeConfig.getBackendCallbackUrl());
         } catch (Exception ex) {
             showError("Error generating auth URL", ex);
         }
