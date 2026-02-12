@@ -16,8 +16,8 @@ public class ShopeeAuth {
         long timestamp = ShopeeSignature.getCurrentTimestamp();
         String sign = ShopeeSignature.generatePartnerSignature(ShopeeConfig.AUTH_PARTNER_PATH, timestamp);
 
-        return ShopeeConfig.HOST + ShopeeConfig.AUTH_PARTNER_PATH +
-                "?partner_id=" + ShopeeConfig.PARTNER_ID +
+        return RuntimeConfig.getApiHost() + ShopeeConfig.AUTH_PARTNER_PATH +
+                "?partner_id=" + RuntimeConfig.getPartnerId() +
                 "&timestamp=" + timestamp +
                 "&sign=" + sign +
                 "&redirect=" + redirectUrl;
