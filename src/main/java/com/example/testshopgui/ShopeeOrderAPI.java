@@ -66,8 +66,8 @@ public class ShopeeOrderAPI {
         long timeFrom = currentTime - (15 * 24 * 60 * 60); // 15 days ago
         long timeTo = currentTime;
 
-        return ShopeeConfig.HOST + ShopeeConfig.ORDER_LIST_PATH +
-                "?partner_id=" + ShopeeConfig.PARTNER_ID +
+        return RuntimeConfig.getApiHost() + ShopeeConfig.ORDER_LIST_PATH +
+                "?partner_id=" + RuntimeConfig.getPartnerId() +
                 "&sign=" + sign +
                 "&timestamp=" + timestamp +
                 "&shop_id=" + shopId +

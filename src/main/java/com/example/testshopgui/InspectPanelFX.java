@@ -151,7 +151,7 @@ public class InspectPanelFX {
 
         sb.append("📝 URL PARAMETERS\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("partner_id:      ").append(ShopeeConfig.PARTNER_ID).append("\n");
+        sb.append("partner_id:      ").append(RuntimeConfig.getPartnerId()).append("\n");
         sb.append("timestamp:       ").append(timestamp).append("\n");
         sb.append("sign:            ").append(sign).append("\n");
         sb.append("redirect:        ").append(redirectUrl).append("\n\n");
@@ -176,9 +176,9 @@ public class InspectPanelFX {
 
         sb.append("📋 CONFIGURATION\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("Partner ID:      ").append(ShopeeConfig.PARTNER_ID).append("\n");
-        sb.append("Partner Key:     ").append(ShopeeConfig.PARTNER_KEY).append("\n");
-        sb.append("Host:            ").append(ShopeeConfig.HOST).append("\n");
+        sb.append("Partner ID:      ").append(RuntimeConfig.getPartnerId()).append("\n");
+        sb.append("Partner Key:     ").append(RuntimeConfig.getPartnerKey()).append("\n");
+        sb.append("Host:            ").append(RuntimeConfig.getApiHost()).append("\n");
         sb.append("Endpoint Path:   ").append(path).append("\n");
         sb.append("Shop ID:         ").append(shopId).append("\n");
         sb.append("Auth Code:       ").append(code).append(" (REPLACE WITH ACTUAL CODE)\n\n");
@@ -190,18 +190,18 @@ public class InspectPanelFX {
 
         sb.append("🔐 SIGNATURE CALCULATION\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("Base String:     ").append(ShopeeConfig.PARTNER_ID).append(path).append(timestamp).append("\n");
+        sb.append("Base String:     ").append(RuntimeConfig.getPartnerId()).append(path).append(timestamp).append("\n");
         sb.append("Algorithm:       HMAC-SHA256\n");
-        sb.append("Secret Key:      ").append(ShopeeConfig.PARTNER_KEY).append("\n");
+        sb.append("Secret Key:      ").append(RuntimeConfig.getPartnerKey()).append("\n");
         sb.append("Signature:       ").append(sign).append("\n\n");
 
-        String url = ShopeeConfig.HOST + path +
-                "?partner_id=" + ShopeeConfig.PARTNER_ID +
+        String url = RuntimeConfig.getApiHost() + path +
+                "?partner_id=" + RuntimeConfig.getPartnerId() +
                 "&timestamp=" + timestamp +
                 "&sign=" + sign;
 
         String jsonBody = String.format("{\"code\":\"%s\",\"shop_id\":%d,\"partner_id\":%d}",
-                code, shopId, ShopeeConfig.PARTNER_ID);
+                code, shopId, RuntimeConfig.getPartnerId());
 
         sb.append("🌐 API REQUEST\n");
         sb.append("─────────────────────────────────────────────────────────\n");
@@ -215,7 +215,7 @@ public class InspectPanelFX {
 
         sb.append("📝 URL PARAMETERS\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("partner_id:      ").append(ShopeeConfig.PARTNER_ID).append("\n");
+        sb.append("partner_id:      ").append(RuntimeConfig.getPartnerId()).append("\n");
         sb.append("timestamp:       ").append(timestamp).append("\n");
         sb.append("sign:            ").append(sign).append("\n\n");
 
@@ -302,7 +302,7 @@ public class InspectPanelFX {
 
         sb.append("📝 URL PARAMETERS\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("partner_id:      ").append(ShopeeConfig.PARTNER_ID).append("\n");
+        sb.append("partner_id:      ").append(RuntimeConfig.getPartnerId()).append("\n");
         sb.append("timestamp:       ").append(timestamp).append("\n");
         sb.append("sign:            ").append(sign).append("\n\n");
 
@@ -348,9 +348,9 @@ public class InspectPanelFX {
 
         sb.append("📋 CONFIGURATION\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("Partner ID:      ").append(ShopeeConfig.PARTNER_ID).append("\n");
-        sb.append("Partner Key:     ").append(ShopeeConfig.PARTNER_KEY).append("\n");
-        sb.append("Host:            ").append(ShopeeConfig.HOST).append("\n");
+        sb.append("Partner ID:      ").append(RuntimeConfig.getPartnerId()).append("\n");
+        sb.append("Partner Key:     ").append(RuntimeConfig.getPartnerKey()).append("\n");
+        sb.append("Host:            ").append(RuntimeConfig.getApiHost()).append("\n");
         sb.append("Endpoint Path:   ").append(path).append("\n");
         sb.append("Shop ID:         ").append(shopId).append("\n");
         sb.append("Access Token:    ").append(accessToken).append("\n\n");
@@ -362,18 +362,18 @@ public class InspectPanelFX {
 
         sb.append("🔐 SIGNATURE CALCULATION (Shop-Level)\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("Base String:     ").append(ShopeeConfig.PARTNER_ID).append(path).append(timestamp)
+        sb.append("Base String:     ").append(RuntimeConfig.getPartnerId()).append(path).append(timestamp)
             .append(accessToken).append(shopId).append("\n");
         sb.append("Algorithm:       HMAC-SHA256\n");
-        sb.append("Secret Key:      ").append(ShopeeConfig.PARTNER_KEY).append("\n");
+        sb.append("Secret Key:      ").append(RuntimeConfig.getPartnerKey()).append("\n");
         sb.append("Signature:       ").append(sign).append("\n\n");
 
         long currentTime = System.currentTimeMillis() / 1000L;
         long timeFrom = currentTime - (15 * 24 * 60 * 60);
         long timeTo = currentTime;
 
-        String url = ShopeeConfig.HOST + path +
-                "?partner_id=" + ShopeeConfig.PARTNER_ID +
+        String url = RuntimeConfig.getApiHost() + path +
+                "?partner_id=" + RuntimeConfig.getPartnerId() +
                 "&sign=" + sign +
                 "&timestamp=" + timestamp +
                 "&shop_id=" + shopId +
@@ -395,7 +395,7 @@ public class InspectPanelFX {
 
         sb.append("📝 URL PARAMETERS\n");
         sb.append("─────────────────────────────────────────────────────────\n");
-        sb.append("partner_id:                      ").append(ShopeeConfig.PARTNER_ID).append("\n");
+        sb.append("partner_id:                      ").append(RuntimeConfig.getPartnerId()).append("\n");
         sb.append("sign:                            ").append(sign).append("\n");
         sb.append("timestamp:                       ").append(timestamp).append("\n");
         sb.append("shop_id:                         ").append(shopId).append("\n");

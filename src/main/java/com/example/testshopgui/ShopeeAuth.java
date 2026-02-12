@@ -83,18 +83,18 @@ public class ShopeeAuth {
      */
     public static String refreshAccessToken(long shopId, String refreshToken) throws Exception {
         long timestamp = ShopeeSignature.getCurrentTimestamp();
-        String baseString = String.format("%s%s%s", ShopeeConfig.PARTNER_ID, ShopeeConfig.AUTH_REFRESH_PATH, timestamp);
+        String baseString = String.format("%s%s%s", RuntimeConfig.getPartnerId(), ShopeeConfig.AUTH_REFRESH_PATH, timestamp);
         String sign = ShopeeSignature.generatePartnerSignature(ShopeeConfig.AUTH_REFRESH_PATH, timestamp);
 
         // Build URL (only signature parameters in URL)
-        String urlString = ShopeeConfig.HOST + ShopeeConfig.AUTH_REFRESH_PATH +
-                "?partner_id=" + ShopeeConfig.PARTNER_ID +
+        String urlString = RuntimeConfig.getApiHost() + ShopeeConfig.AUTH_REFRESH_PATH +
+                "?partner_id=" + RuntimeConfig.getPartnerId() +
                 "&timestamp=" + timestamp +
                 "&sign=" + sign;
 
         // Build JSON body with refresh_token and shop_id
         String jsonBody = String.format("{\"refresh_token\":\"%s\",\"shop_id\":%d,\"partner_id\":%d}",
-                refreshToken, shopId, ShopeeConfig.PARTNER_ID);
+                refreshToken, shopId, RuntimeConfig.getPartnerId());
 
         // Log request details
         System.out.println("Request Details:");

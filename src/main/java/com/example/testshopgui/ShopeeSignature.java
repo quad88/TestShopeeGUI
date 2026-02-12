@@ -15,8 +15,8 @@ public class ShopeeSignature {
      * Format: partner_id + path + timestamp
      */
     public static String generatePartnerSignature(String path, long timestamp) throws Exception {
-        String baseString = String.format("%s%s%s", ShopeeConfig.PARTNER_ID, path, timestamp);
-        return hmacSha256(baseString, ShopeeConfig.PARTNER_KEY);
+        String baseString = String.format("%s%s%s", RuntimeConfig.getPartnerId(), path, timestamp);
+        return hmacSha256(baseString, RuntimeConfig.getPartnerKey());
     }
 
     /**
@@ -25,8 +25,8 @@ public class ShopeeSignature {
      */
     public static String generateShopSignature(String path, long timestamp, String accessToken, long shopId) throws Exception {
         String baseString = String.format("%s%s%s%s%s",
-            ShopeeConfig.PARTNER_ID, path, timestamp, accessToken, shopId);
-        return hmacSha256(baseString, ShopeeConfig.PARTNER_KEY);
+            RuntimeConfig.getPartnerId(), path, timestamp, accessToken, shopId);
+        return hmacSha256(baseString, RuntimeConfig.getPartnerKey());
     }
 
     /**

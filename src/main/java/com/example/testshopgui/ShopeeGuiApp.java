@@ -95,10 +95,10 @@ public class ShopeeGuiApp extends Application {
         statusBar.setPadding(new Insets(5));
         statusBar.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;");
 
-        Label apiStatus = new Label("API: " + ShopeeConfig.HOST);
+        Label apiStatus = new Label("API: " + RuntimeConfig.getApiHost());
         apiStatus.setStyle("-fx-font-size: 10px;");
 
-        Label partnerInfo = new Label("Partner ID: " + ShopeeConfig.PARTNER_ID);
+        Label partnerInfo = new Label("Partner ID: " + RuntimeConfig.getPartnerId());
         partnerInfo.setStyle("-fx-font-size: 10px;");
 
         Region spacer = new Region();
@@ -119,62 +119,156 @@ public class ShopeeGuiApp extends Application {
         VBox panel = new VBox(15);
         panel.setPadding(new Insets(20));
 
-        Label title = new Label("API Configuration");
+        Label title = new Label("⚙️ API Configuration");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // Instructions
+        Label instructions = new Label("💡 Edit the fields below and click 'Save Changes' to update the configuration.");
+        instructions.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        instructions.setWrapText(true);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
-        grid.setVgap(10);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(10, 0, 10, 0));
 
         // Partner ID
         grid.add(new Label("Partner ID:"), 0, 0);
-        TextField partnerIdField = new TextField(String.valueOf(ShopeeConfig.PARTNER_ID));
-        partnerIdField.setEditable(false);
-        partnerIdField.setPrefWidth(300);
+        TextField partnerIdField = new TextField(String.valueOf(RuntimeConfig.getPartnerId()));
+        partnerIdField.setPrefWidth(400);
+        partnerIdField.setPromptText("Enter your Partner ID");
         grid.add(partnerIdField, 1, 0);
 
         // Partner Key
         grid.add(new Label("Partner Key:"), 0, 1);
-        PasswordField partnerKeyField = new PasswordField();
-        partnerKeyField.setText(ShopeeConfig.PARTNER_KEY);
-        partnerKeyField.setEditable(false);
-        partnerKeyField.setPrefWidth(300);
+        TextField partnerKeyField = new TextField(RuntimeConfig.getPartnerKey());
+        partnerKeyField.setPrefWidth(400);
+        partnerKeyField.setPromptText("Enter your Partner Key");
         grid.add(partnerKeyField, 1, 1);
 
-        // Host
+        // API Host
         grid.add(new Label("API Host:"), 0, 2);
-        TextField hostField = new TextField(ShopeeConfig.HOST);
-        hostField.setEditable(false);
-        hostField.setPrefWidth(300);
+        TextField hostField = new TextField(RuntimeConfig.getApiHost());
+        hostField.setPrefWidth(400);
+        hostField.setPromptText("Enter API Host URL");
         grid.add(hostField, 1, 2);
 
         // Default Shop ID
         grid.add(new Label("Default Shop ID:"), 0, 3);
-        TextField shopIdField = new TextField(String.valueOf(ShopeeConfig.SHOP_ID));
-        shopIdField.setPrefWidth(300);
+        TextField shopIdField = new TextField(String.valueOf(RuntimeConfig.getDefaultShopId()));
+        shopIdField.setPrefWidth(400);
+        shopIdField.setPromptText("Enter default Shop ID");
         grid.add(shopIdField, 1, 3);
 
-        // Token storage info
-        Label storageInfo = new Label("💾 Token Storage: In-Memory (for testing)");
-        storageInfo.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        // Current values display
+        Label currentValuesLabel = new Label("📋 Current Active Configuration:");
+        currentValuesLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
+        TextArea currentValues = new TextArea();
+        currentValues.setEditable(false);
+        currentValues.setPrefHeight(100);
+        currentValues.setWrapText(true);
+        currentValues.setStyle("-fx-font-family: 'Courier New', monospace; -fx-font-size: 11px;");
+        updateCurrentValuesDisplay(currentValues);
+
+        // Buttons
+        HBox buttonBox = new HBox(10);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+
+        Button saveButton = new Button("💾 Save Changes");
+        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20;");
+        saveButton.setOnAction(e -> {
+            try {
+                long partnerId = Long.parseLong(partnerIdField.getText().trim());
+                String partnerKey = partnerKeyField.getText().trim();
+                String host = hostField.getText().trim();
+                long shopId = Long.parseLong(shopIdField.getText().trim());
+
+                RuntimeConfig.setPartnerId(partnerId);
+                RuntimeConfig.setPartnerKey(partnerKey);
+                RuntimeConfig.setApiHost(host);
+                RuntimeConfig.setDefaultShopId(shopId);
+
+                updateCurrentValuesDisplay(currentValues);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText("Configuration Updated");
+                alert.setContentText("Configuration has been updated successfully!\nOther tabs will now use these values.");
+                alert.showAndWait();
+            } catch (NumberFormatException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Invalid Input");
+                alert.setContentText("Partner ID and Shop ID must be valid numbers.");
+                alert.showAndWait();
+            }
+        });
+
+        Button resetButton = new Button("🔄 Reset to Defaults");
+        resetButton.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20;");
+        resetButton.setOnAction(e -> {
+            RuntimeConfig.resetToDefaults();
+            partnerIdField.setText(String.valueOf(RuntimeConfig.getPartnerId()));
+            partnerKeyField.setText(RuntimeConfig.getPartnerKey());
+            hostField.setText(RuntimeConfig.getApiHost());
+            shopIdField.setText(String.valueOf(RuntimeConfig.getDefaultShopId()));
+            updateCurrentValuesDisplay(currentValues);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Reset");
+            alert.setHeaderText("Configuration Reset");
+            alert.setContentText("Configuration has been reset to default values from ShopeeConfig.java");
+            alert.showAndWait();
+        });
+
+        buttonBox.getChildren().addAll(saveButton, resetButton);
 
         // Info box
+        Label infoLabel = new Label("ℹ️ Information:");
+        infoLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+
         TextArea infoBox = new TextArea(
-            "ℹ️ Configuration Information:\n\n" +
-            "• This application uses your existing ShopeeConfig.java settings\n" +
-            "• Tokens are stored in memory during this session\n" +
-            "• For production, implement database token storage\n" +
+            "• Changes apply immediately to all tabs (Authorization, Orders, Inspect)\n" +
+            "• Configuration is stored in memory only (resets on app restart)\n" +
+            "• For production, implement persistent storage (database/file)\n" +
             "• Partner credentials are from your Shopee Partner Portal\n" +
-            "• Currently using SANDBOX environment for testing"
+            "• Currently using SANDBOX environment for testing\n" +
+            "• Token storage is in-memory for this session"
         );
         infoBox.setEditable(false);
-        infoBox.setPrefHeight(150);
+        infoBox.setPrefHeight(120);
         infoBox.setWrapText(true);
-        infoBox.setStyle("-fx-font-size: 11px;");
+        infoBox.setStyle("-fx-font-size: 11px; -fx-background-color: #f9f9f9;");
 
-        panel.getChildren().addAll(title, grid, storageInfo, new Separator(), infoBox);
+        panel.getChildren().addAll(
+            title,
+            instructions,
+            new Separator(),
+            grid,
+            buttonBox,
+            new Separator(),
+            currentValuesLabel,
+            currentValues,
+            new Separator(),
+            infoLabel,
+            infoBox
+        );
 
         return panel;
+    }
+
+    private void updateCurrentValuesDisplay(TextArea textArea) {
+        textArea.setText(String.format(
+            "Partner ID:      %d\n" +
+            "Partner Key:     %s\n" +
+            "API Host:        %s\n" +
+            "Default Shop ID: %d",
+            RuntimeConfig.getPartnerId(),
+            RuntimeConfig.getPartnerKey(),
+            RuntimeConfig.getApiHost(),
+            RuntimeConfig.getDefaultShopId()
+        ));
     }
 
     /**
