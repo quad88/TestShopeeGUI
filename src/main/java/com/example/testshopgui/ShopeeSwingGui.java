@@ -27,6 +27,7 @@ public class ShopeeSwingGui extends JFrame {
         tabs.addTab("Shops", createShopPanel());
         tabs.addTab("Authorization", createAuthPanel());
         tabs.addTab("Orders", createOrderPanel());
+        tabs.addTab("Inspect", new InspectPanel());
         add(tabs, BorderLayout.CENTER);
 
         // Bottom - log

@@ -37,6 +37,10 @@ public class ShopeeTokenStorage {
             return refreshToken;
         }
 
+        public long getExpiresAt() {
+            return expiresAt;
+        }
+
         public boolean isExpired() {
             return System.currentTimeMillis() / 1000L >= expiresAt;
         }

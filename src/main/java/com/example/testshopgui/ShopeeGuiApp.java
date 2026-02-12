@@ -29,6 +29,7 @@ public class ShopeeGuiApp extends Application {
     private ShopManagerPanel shopManagerPanel;
     private AuthPanel authPanel;
     private OrderPanel orderPanel;
+    private InspectPanelFX inspectPanel;
 
     @Override
     public void start(Stage primaryStage) {
@@ -42,14 +43,16 @@ public class ShopeeGuiApp extends Application {
         shopManagerPanel = new ShopManagerPanel();
         authPanel = new AuthPanel();
         orderPanel = new OrderPanel();
+        inspectPanel = new InspectPanelFX();
 
         // Create tabs
         Tab shopTab = new Tab("📋 Shop Manager", shopManagerPanel.getPanel());
         Tab authTab = new Tab("🔐 Authorization", authPanel.getPanel());
         Tab orderTab = new Tab("📦 Orders", orderPanel.getPanel());
+        Tab inspectTab = new Tab("🔍 Inspect", inspectPanel.getPanel());
         Tab settingsTab = new Tab("⚙️ Settings", createSettingsPanel());
 
-        tabPane.getTabs().addAll(shopTab, authTab, orderTab, settingsTab);
+        tabPane.getTabs().addAll(shopTab, authTab, orderTab, inspectTab, settingsTab);
 
         // Create main layout
         VBox root = new VBox(10);
