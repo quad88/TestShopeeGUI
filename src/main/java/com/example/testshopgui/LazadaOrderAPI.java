@@ -1,5 +1,7 @@
 package com.example.testshopgui;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +32,22 @@ public class LazadaOrderAPI {
         params.put("sign_method", "sha256");
         params.put("access_token", accessToken);
 
-        // Add optional filters
+        // Lazada API requires either created_after or updated_after
+        // If neither is provided, default to last 7 days
+        if ((createdAfter == null || createdAfter.isEmpty()) && (createdBefore == null || createdBefore.isEmpty())) {
+            // Get current time in ISO 8601 format
+            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+            ZonedDateTime sevenDaysAgo = now.minusDays(7);
+
+            createdAfter = sevenDaysAgo.toInstant().toString();
+            createdBefore = now.toInstant().toString();
+
+            System.out.println("Using default date range: Last 7 days");
+            System.out.println("Created After: " + createdAfter);
+            System.out.println("Created Before: " + createdBefore);
+        }
+
+        // Add filters
         if (createdAfter != null && !createdAfter.isEmpty()) {
             params.put("created_after", createdAfter);
         }
