@@ -93,7 +93,7 @@ public class LazadaOrderAPI {
      * @return JSON response containing order list
      */
     public static String getOrders(String accessToken) throws Exception {
-        return getOrders(accessToken, null, null, null, 0, 20);
+        return getOrders(accessToken, null, null, null, 0, 5);
     }
 
     /**

@@ -19,6 +19,12 @@ public class LazadaHttpClient {
      * @return Response body as string
      */
     public static String get(String urlString) throws Exception {
+        // Extract endpoint name from URL
+        String endpoint = extractEndpoint(urlString);
+
+        // Log the request
+        ApiRequestLogger.logRequest("GET", urlString, null, "Lazada", endpoint);
+
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
@@ -43,7 +49,12 @@ public class LazadaHttpClient {
         }
         in.close();
 
-        return response.toString();
+        String responseBody = response.toString();
+
+        // Log the response
+        ApiRequestLogger.logResponse(responseCode, responseBody);
+
+        return responseBody;
     }
 
     /**
@@ -53,6 +64,12 @@ public class LazadaHttpClient {
      * @return Response body as string
      */
     public static String post(String urlString, String jsonBody) throws Exception {
+        // Extract endpoint name from URL
+        String endpoint = extractEndpoint(urlString);
+
+        // Log the request
+        ApiRequestLogger.logRequest("POST", urlString, jsonBody, "Lazada", endpoint);
+
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -89,6 +106,35 @@ public class LazadaHttpClient {
         }
         in.close();
 
-        return response.toString();
+        String responseBody = response.toString();
+
+        // Log the response
+        ApiRequestLogger.logResponse(responseCode, responseBody);
+
+        return responseBody;
+    }
+
+    /**
+     * Extract endpoint name from URL for logging
+     */
+    private static String extractEndpoint(String urlString) {
+        try {
+            if (urlString.contains("/orders/get")) {
+                return "Get Orders";
+            } else if (urlString.contains("/order/items/get")) {
+                return "Get Order Items";
+            } else if (urlString.contains("/auth/token/create")) {
+                return "Create Access Token";
+            } else if (urlString.contains("/auth/token/refresh")) {
+                return "Refresh Access Token";
+            } else {
+                // Extract last part of path
+                String path = urlString.split("\\?")[0];
+                String[] parts = path.split("/");
+                return parts[parts.length - 1];
+            }
+        } catch (Exception e) {
+            return "Unknown";
+        }
     }
 }

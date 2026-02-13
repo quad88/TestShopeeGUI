@@ -16,9 +16,16 @@ public class InspectPanelFX {
     private ComboBox<String> apiEndpointCombo;
     private TextField shopIdField;
     private String currentCurlCommand = "";
+    private TabPane mainTabPane;
+    private Tab manualTab;
+    private Tab liveTab;
+    private TextArea liveRequestArea;
+    private Button liveCopyCurlButton;
 
     public InspectPanelFX() {
         createPanel();
+        // Register this panel with the logger
+        ApiRequestLogger.setInspectPanel(this);
     }
 
     private void createPanel() {
@@ -28,6 +35,29 @@ public class InspectPanelFX {
         // Title
         Label title = new Label("🔍 API Inspector");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // Create tab pane
+        mainTabPane = new TabPane();
+
+        // Tab 1: Manual Inspector (existing functionality)
+        manualTab = new Tab("Manual Inspector");
+        manualTab.setClosable(false);
+        manualTab.setContent(createManualInspectorTab());
+
+        // Tab 2: Live API Requests
+        liveTab = new Tab("Live API Requests");
+        liveTab.setClosable(false);
+        liveTab.setContent(createLiveRequestsTab());
+
+        mainTabPane.getTabs().addAll(manualTab, liveTab);
+        VBox.setVgrow(mainTabPane, Priority.ALWAYS);
+
+        panel.getChildren().addAll(title, mainTabPane);
+    }
+
+    private VBox createManualInspectorTab() {
+        VBox tabContent = new VBox(15);
+        tabContent.setPadding(new Insets(10));
 
         // Control panel
         HBox controlPanel = new HBox(10);
@@ -72,10 +102,80 @@ public class InspectPanelFX {
         VBox.setVgrow(inspectArea, Priority.ALWAYS);
 
         // Info label
-        Label infoLabel = new Label("💡 Use 'Copy cURL' to export commands for Postman");
+        Label infoLabel = new Label("💡 Generate and inspect API requests manually");
         infoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
 
-        panel.getChildren().addAll(title, controlPanel, inspectArea, infoLabel);
+        tabContent.getChildren().addAll(controlPanel, inspectArea, infoLabel);
+        return tabContent;
+    }
+
+    private VBox createLiveRequestsTab() {
+        VBox tabContent = new VBox(15);
+        tabContent.setPadding(new Insets(10));
+
+        // Control panel for live requests
+        HBox controlPanel = new HBox(10);
+        controlPanel.setPadding(new Insets(10, 0, 10, 0));
+
+        Label statusLabel = new Label("📡 Live API Request Monitor");
+        statusLabel.setStyle("-fx-font-weight: bold;");
+
+        Button refreshButton = new Button("🔄 Refresh");
+        refreshButton.setOnAction(e -> refreshLiveRequest());
+
+        Button copyAllButton = new Button("Copy All");
+        copyAllButton.setOnAction(e -> copyToClipboard(liveRequestArea.getText()));
+
+        liveCopyCurlButton = new Button("Copy cURL");
+        liveCopyCurlButton.setOnAction(e -> {
+            ApiRequestLogger.ApiRequest latest = ApiRequestLogger.getLatestRequest();
+            if (latest != null) {
+                copyToClipboard(latest.generateCurl());
+            }
+        });
+
+        Button clearButton = new Button("Clear History");
+        clearButton.setOnAction(e -> {
+            ApiRequestLogger.clear();
+            liveRequestArea.setText("History cleared. Waiting for API requests...\n");
+        });
+
+        controlPanel.getChildren().addAll(statusLabel, refreshButton, copyAllButton, liveCopyCurlButton, clearButton);
+
+        // Live request area
+        liveRequestArea = new TextArea();
+        liveRequestArea.setEditable(false);
+        liveRequestArea.setWrapText(true);
+        liveRequestArea.setStyle("-fx-font-family: 'Courier New', monospace; -fx-font-size: 11px;");
+        liveRequestArea.setText("Waiting for API requests...\n\nMake an API call (e.g., fetch orders from Shopee or Lazada)\nand the request details will appear here automatically.");
+        VBox.setVgrow(liveRequestArea, Priority.ALWAYS);
+
+        // Info label
+        Label infoLabel = new Label("💡 Real-time API requests are logged here automatically with cURL commands");
+        infoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
+
+        tabContent.getChildren().addAll(controlPanel, liveRequestArea, infoLabel);
+        return tabContent;
+    }
+
+    /**
+     * Update the live requests tab with the latest API request
+     * Called by ApiRequestLogger
+     */
+    public void updateWithApiRequest(ApiRequestLogger.ApiRequest request) {
+        if (request != null && liveRequestArea != null) {
+            liveRequestArea.setText(request.getFormattedLog());
+            liveRequestArea.setScrollTop(0);
+        }
+    }
+
+    private void refreshLiveRequest() {
+        ApiRequestLogger.ApiRequest latest = ApiRequestLogger.getLatestRequest();
+        if (latest != null) {
+            updateWithApiRequest(latest);
+        } else {
+            liveRequestArea.setText("No API requests logged yet.\n\nMake an API call to see it here.");
+        }
     }
 
     private void generateInspectData() {
