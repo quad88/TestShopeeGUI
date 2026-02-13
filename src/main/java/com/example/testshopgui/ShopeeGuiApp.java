@@ -188,13 +188,13 @@ public class ShopeeGuiApp extends Application {
             try {
                 long partnerId = Long.parseLong(partnerIdField.getText().trim());
                 String partnerKey = partnerKeyField.getText().trim();
-                String host = hostField.getText().trim();
+                // host field is read-only, no need to save
                 long shopId = Long.parseLong(shopIdField.getText().trim());
                 String backendCallback = backendCallbackField.getText().trim();
 
                 RuntimeConfig.setPartnerId(partnerId);
                 RuntimeConfig.setPartnerKey(partnerKey);
-                RuntimeConfig.setApiHost(host);
+                // RuntimeConfig.setApiHost(host); // Not saving - host is read-only
                 RuntimeConfig.setDefaultShopId(shopId);
                 RuntimeConfig.setBackendCallbackUrl(backendCallback);
 
