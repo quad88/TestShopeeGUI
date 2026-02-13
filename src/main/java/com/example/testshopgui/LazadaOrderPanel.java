@@ -30,7 +30,7 @@ public class LazadaOrderPanel {
         // Instructions
         Label instructions = new Label(
             "💡 Fetch orders from Lazada. " +
-            "Make sure you have completed authorization and have a valid access token."
+            "Token will be auto-loaded if you've completed authorization."
         );
         instructions.setWrapText(true);
         instructions.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
@@ -42,11 +42,12 @@ public class LazadaOrderPanel {
 
         Label tokenLabel = new Label("Access Token:");
         accessTokenField = new TextField();
-        accessTokenField.setPromptText("Enter your access token or load from storage");
+        accessTokenField.setPromptText("Token will auto-load from storage");
         accessTokenField.setPrefWidth(400);
 
-        Button loadTokenBtn = new Button("📁 Load Token");
+        Button loadTokenBtn = new Button("📁 Reload Token");
         loadTokenBtn.setOnAction(e -> loadToken());
+        loadTokenBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
         formGrid.add(tokenLabel, 0, 0);
         formGrid.add(accessTokenField, 1, 0);
@@ -66,7 +67,7 @@ public class LazadaOrderPanel {
         buttonBox.getChildren().addAll(fetchBtn, clearBtn);
 
         // Status
-        statusLabel = new Label("Ready");
+        statusLabel = new Label("Initializing...");
         statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
 
         // Order display area
@@ -87,6 +88,9 @@ public class LazadaOrderPanel {
             statusLabel,
             orderArea
         );
+
+        // Auto-load token on startup
+        loadToken();
     }
 
     public VBox getPanel() {
@@ -99,19 +103,48 @@ public class LazadaOrderPanel {
                 LazadaTokenStorage.TokenData tokenData = LazadaTokenStorage.loadToken();
                 if (tokenData != null) {
                     accessTokenField.setText(tokenData.accessToken);
-                    statusLabel.setText("✅ Token loaded from storage");
+
+                    // Display token info
+                    orderArea.clear();
+                    orderArea.appendText("✅ Token loaded successfully!\n\n");
+                    orderArea.appendText("🔑 Access Token: " + tokenData.accessToken.substring(0, Math.min(40, tokenData.accessToken.length())) + "...\n");
+                    orderArea.appendText("🔄 Refresh Token: " + tokenData.refreshToken.substring(0, Math.min(40, tokenData.refreshToken.length())) + "...\n");
+                    orderArea.appendText("⏱️ Expires in: " + (tokenData.expiresIn / 86400) + " days\n");
+                    orderArea.appendText("📅 Created: " + new java.util.Date(tokenData.createdAt) + "\n");
+
+                    if (!tokenData.sellerId.isEmpty()) {
+                        orderArea.appendText("🏪 Seller ID: " + tokenData.sellerId + "\n");
+                    }
 
                     if (tokenData.isAccessTokenExpired()) {
-                        statusLabel.setText("⚠️ Token loaded but expired - use refresh token");
+                        statusLabel.setText("⚠️ Token expired - needs refresh");
+                        statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #ff6600;");
+                        orderArea.appendText("\n⚠️ WARNING: Access token has expired!\n");
+                        orderArea.appendText("💡 Use refresh token to get a new access token\n");
+                    } else {
+                        long remainingSeconds = tokenData.expiresIn - ((System.currentTimeMillis() - tokenData.createdAt) / 1000);
+                        long remainingDays = remainingSeconds / 86400;
+                        long remainingHours = (remainingSeconds % 86400) / 3600;
+                        statusLabel.setText("✅ Token valid - " + remainingDays + "d " + remainingHours + "h remaining");
+                        statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #4CAF50;");
+                        orderArea.appendText("\n✅ Token is valid and ready to use!\n");
+                        orderArea.appendText("💡 Click 'Fetch Orders' to retrieve your Lazada orders\n");
                     }
                 } else {
                     statusLabel.setText("❌ Failed to load token data");
+                    statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #f44336;");
+                    orderArea.setText("❌ Failed to load token data\n");
                 }
             } else {
-                statusLabel.setText("❌ No saved token found. Please authorize first.");
+                statusLabel.setText("❌ No saved token - Please authorize first");
+                statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #f44336;");
+                orderArea.setText("❌ No saved token found\n\n");
+                orderArea.appendText("💡 Go to 'Lazada Auth' tab to authorize your shop first\n");
             }
         } catch (Exception ex) {
             showError("Failed to load token", ex);
+            statusLabel.setText("❌ Error loading token");
+            statusLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #f44336;");
         }
     }
 

@@ -160,13 +160,101 @@ public class LazadaAuthPanel {
                 Platform.runLater(() -> {
                     resultArea.appendText("\n✅ Authorization successful!\n");
                     resultArea.appendText("Response:\n" + response + "\n\n");
-                    resultArea.appendText("💡 Note: Parse this JSON to extract tokens and save them using LazadaTokenStorage\n");
+
+                    // Parse and save token automatically
+                    try {
+                        parseAndSaveToken(response);
+                    } catch (Exception ex) {
+                        resultArea.appendText("⚠️ Warning: Failed to auto-save token: " + ex.getMessage() + "\n");
+                        resultArea.appendText("💡 You can manually extract and save the token\n");
+                    }
+
                     authCodeField.clear();
                 });
             } catch (Exception ex) {
                 Platform.runLater(() -> showError("Authorization failed", ex));
             }
         }).start();
+    }
+
+    private void parseAndSaveToken(String jsonResponse) throws Exception {
+        // Simple JSON parsing (without external library)
+        String accessToken = extractJsonValue(jsonResponse, "access_token");
+        String refreshToken = extractJsonValue(jsonResponse, "refresh_token");
+        String expiresInStr = extractJsonValue(jsonResponse, "expires_in");
+        String refreshExpiresInStr = extractJsonValue(jsonResponse, "refresh_expires_in");
+        String sellerId = "";
+
+        // Try to extract seller_id from country_user_info array
+        try {
+            int sellerIdIndex = jsonResponse.indexOf("\"seller_id\":\"");
+            if (sellerIdIndex != -1) {
+                int start = sellerIdIndex + 13;
+                int end = jsonResponse.indexOf("\"", start);
+                if (end != -1) {
+                    sellerId = jsonResponse.substring(start, end);
+                }
+            }
+        } catch (Exception e) {
+            // Ignore if can't extract seller_id
+        }
+
+        if (accessToken == null || refreshToken == null) {
+            throw new Exception("Failed to parse access_token or refresh_token from response");
+        }
+
+        long expiresIn = expiresInStr != null ? Long.parseLong(expiresInStr) : 604800; // default 7 days
+        long refreshExpiresIn = refreshExpiresInStr != null ? Long.parseLong(refreshExpiresInStr) : 2592000; // default 30 days
+
+        // Create token data and save
+        LazadaTokenStorage.TokenData tokenData = new LazadaTokenStorage.TokenData(
+            accessToken,
+            refreshToken,
+            expiresIn,
+            refreshExpiresIn,
+            sellerId
+        );
+
+        LazadaTokenStorage.saveToken(tokenData);
+
+        resultArea.appendText("\n✅ Token saved successfully!\n");
+        resultArea.appendText("📁 Location: " + System.getProperty("user.home") + "/.testshopgui/lazada_tokens.properties\n");
+        resultArea.appendText("🔑 Access Token: " + accessToken.substring(0, Math.min(30, accessToken.length())) + "...\n");
+        resultArea.appendText("🔄 Refresh Token: " + refreshToken.substring(0, Math.min(30, refreshToken.length())) + "...\n");
+        resultArea.appendText("⏱️ Expires in: " + (expiresIn / 86400) + " days\n");
+        if (!sellerId.isEmpty()) {
+            resultArea.appendText("🏪 Seller ID: " + sellerId + "\n");
+        }
+        resultArea.appendText("\n💡 You can now use the 'Lazada Orders' tab to fetch orders!\n");
+    }
+
+    private String extractJsonValue(String json, String key) {
+        String searchKey = "\"" + key + "\":\"";
+        int startIndex = json.indexOf(searchKey);
+        if (startIndex == -1) {
+            // Try without quotes (for numbers)
+            searchKey = "\"" + key + "\":";
+            startIndex = json.indexOf(searchKey);
+            if (startIndex == -1) {
+                return null;
+            }
+            int valueStart = startIndex + searchKey.length();
+            int valueEnd = json.indexOf(",", valueStart);
+            if (valueEnd == -1) {
+                valueEnd = json.indexOf("}", valueStart);
+            }
+            if (valueEnd == -1) {
+                return null;
+            }
+            return json.substring(valueStart, valueEnd).trim();
+        }
+
+        int valueStart = startIndex + searchKey.length();
+        int valueEnd = json.indexOf("\"", valueStart);
+        if (valueEnd == -1) {
+            return null;
+        }
+        return json.substring(valueStart, valueEnd);
     }
 
     private void showError(String message, Exception ex) {
