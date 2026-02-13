@@ -17,7 +17,7 @@ public class LazadaConfig {
     // Vietnam: https://api.lazada.vn/rest
     // Philippines: https://api.lazada.com.ph/rest
     // Indonesia: https://api.lazada.co.id/rest
-    public static final String API_GATEWAY = "https://api.lazada.th/rest";
+    public static final String API_GATEWAY = "https://api.lazada.co.th/rest";
 
     // API Endpoints (relative paths)
     public static final String AUTH_URL_PATH = "/auth/authorize";
@@ -27,8 +27,8 @@ public class LazadaConfig {
     public static final String ORDER_ITEMS_GET_PATH = "/order/items/get";
 
     // Redirect URL (configure this in your Lazada app settings)
-//    public static final String REDIRECT_URL = "https://smartpick-sit.axonstech.com/lazada/callback";
-    public static final String REDIRECT_URL = "https://smartpick-uat.axonstech.com/login";
+    public static final String REDIRECT_URL = "https://smartpick-sit.axonstech.com/lazada/callback";
+//    public static final String REDIRECT_URL = "https://smartpick-uat.axonstech.com/login";
 
     // Default configuration
     public static final int TOKEN_EXPIRY_BUFFER_SECONDS = 300; // 5 minutes buffer before expiry
