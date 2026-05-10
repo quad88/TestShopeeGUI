@@ -87,6 +87,6 @@ public class ShopeeOrderAPI {
                 "&order_status=READY_TO_SHIP" +
                 "&response_optional_fields=order_status" +
                 "&request_order_status_pending=true" +
-                "&logistics_channel_id=91007";
+                "&logistics_channel_id=71001";
     }
 }

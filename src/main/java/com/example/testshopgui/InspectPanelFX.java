@@ -486,7 +486,7 @@ public class InspectPanelFX {
                 "&order_status=READY_TO_SHIP" +
                 "&response_optional_fields=order_status" +
                 "&request_order_status_pending=true" +
-                "&logistics_channel_id=91007";
+                "&logistics_channel_id=71001";
 
         sb.append("🌐 API REQUEST\n");
         sb.append("─────────────────────────────────────────────────────────\n");
@@ -508,7 +508,7 @@ public class InspectPanelFX {
         sb.append("order_status:                    READY_TO_SHIP\n");
         sb.append("response_optional_fields:        order_status\n");
         sb.append("request_order_status_pending:    true\n");
-        sb.append("logistics_channel_id:            91007\n\n");
+        sb.append("logistics_channel_id:            71001\n\n");
 
         sb.append("💾 STORED TOKENS (from storage)\n");
         sb.append("─────────────────────────────────────────────────────────\n");
